@@ -1,0 +1,19 @@
+# Dependency directories
+node_modules/
+
+# Local env files
+.env
+.env.local
+
+# IDE/OS files
+.DS_Store
+.vscode/
+.idea/
+
+# Python caching
+__pycache__/
+*.pyc
+
+# Generation scripts
+rebuild_git.py
+prepare_rebuild.py
