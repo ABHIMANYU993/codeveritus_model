@@ -1,0 +1,16 @@
+# ==============================================================================
+# CODEVERITUS SYSTEM CORE MODULE
+# ==============================================================================
+# File: model/training/.gitignore
+# Author: ABHIMANYU993
+# Email: abhimanyubadiger1001@gmail.com
+# Project: Codeveritus - AI vs Human Code Classifier
+# Description: Modular component containing system configuration or script details.
+# ==============================================================================
+
+__pycache__/
+*.pyc
+.env
+data/
+trained_models/
+.ipynb_checkpoints/
