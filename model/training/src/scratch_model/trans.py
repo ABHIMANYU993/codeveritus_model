@@ -33,3 +33,39 @@ class RobertaTokenizerFromScratch:
 
 
 # Step 2: Positional Encoding (Replicating Roberta Positional Encoding)
+class PositionalEncoding(nn.Module):
+    def __init__(self, d_model, max_len=512):
+        super(PositionalEncoding, self).__init__()
+        self.encoding = torch.zeros(max_len, d_model)
+        pos = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, d_model, 2).float() * -(np.log(10000.0) / d_model))
+        self.encoding[:, 0::2] = torch.sin(pos * div_term)
+        self.encoding[:, 1::2] = torch.cos(pos * div_term)
+        self.encoding = self.encoding.unsqueeze(0)
+
+    def forward(self, x):
+        return x + self.encoding[:, :x.size(1), :].to(x.device)
+
+
+# Step 3: Transformer Block (Replicating Roberta Transformer Blocks)
+class TransformerBlock(nn.Module):
+    def __init__(self, d_model=768, num_heads=12, ff_hidden_dim=3072):
+        super(TransformerBlock, self).__init__()
+        self.attention = nn.MultiheadAttention(d_model, num_heads)
+        self.norm1 = nn.LayerNorm(d_model)
+        self.norm2 = nn.LayerNorm(d_model)
+        self.ff = nn.Sequential(
+            nn.Linear(d_model, ff_hidden_dim),
+            nn.GELU(),
+            nn.Linear(ff_hidden_dim, d_model)
+        )
+
+    def forward(self, x):
+        attn_output, _ = self.attention(x, x, x)
+        x = self.norm1(x + attn_output)
+        ff_output = self.ff(x)
+        x = self.norm2(x + ff_output)
+        return x
+
+
+# Step 4: CodeBERT Classifier (Replicating RobertaForSequenceClassification)
