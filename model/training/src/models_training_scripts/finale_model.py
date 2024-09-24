@@ -29,3 +29,34 @@ model.to(device)
 
 # Step 3: Load the tokenizer
 tokenizer = RobertaTokenizer.from_pretrained("microsoft/codebert-base")
+
+
+# Step 4: Preprocess the input code samples
+def preprocess_input_code(code_samples):
+    tokenized_samples = []
+    attention_masks = []
+
+    for code_sample in code_samples:
+        tokenized_input = tokenizer(
+            code_sample,
+            padding='max_length',
+            truncation=True,
+            max_length=512,
+            return_tensors='pt'
+        )
+        tokenized_samples.append(tokenized_input['input_ids'].squeeze(0))
+        attention_masks.append(tokenized_input['attention_mask'].squeeze(0))
+
+    # Convert to PyTorch tensors
+    tokens = torch.stack(tokenized_samples)
+    masks = torch.stack(attention_masks)
+
+    return tokens, masks
+
+
+# Step 5: Make predictions
+def predict_code_samples(model, code_samples):
+    tokens, masks = preprocess_input_code(code_samples)
+
+    # Move input tensors to the same device as the model
+    tokens = tokens.to(device)
