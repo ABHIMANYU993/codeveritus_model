@@ -66,3 +66,71 @@ val_dataset = TensorDataset(X_val, y_val, masks_val)
 
 train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=16, shuffle=False)
+
+# Step 5: Define the model
+class CodeBERTClassifier(nn.Module):
+    def __init__(self):
+        super(CodeBERTClassifier, self).__init__()
+        self.model = RobertaForSequenceClassification.from_pretrained("microsoft/codebert-base", num_labels=2)
+        self.dropout = nn.Dropout(p=0.3)
+
+    def forward(self, input_ids, attention_mask=None):
+        outputs = self.model(input_ids, attention_mask=attention_mask)
+        logits = self.dropout(outputs.logits)
+        return logits
+
+model = CodeBERTClassifier()
+
+# Step 6: Optimizer, scheduler, and loss function
+optimizer = AdamW(model.parameters(), lr=2e-5, weight_decay=0.1)
+scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=1)
+loss_fn = nn.CrossEntropyLoss()
+
+scaler = GradScaler()
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model.to(device)
+
+# Step 7: Training loop with mixed precision
+def train_model(model, train_loader, val_loader, optimizer, loss_fn, scheduler, num_epochs=10, patience=3):
+    torch.cuda.empty_cache()
+    train_losses, val_losses, train_accuracies, val_accuracies = [], [], [], []
+    best_val_loss, epochs_without_improvement = float('inf'), 0
+
+    for epoch in range(num_epochs):
+        model.train()
+        total_loss, correct_predictions, total_predictions = 0, 0, 0
+
+        for batch_idx, batch in enumerate(train_loader):
+            optimizer.zero_grad()
+            input_ids, labels, attention_mask = batch[0].to(device), batch[1].to(device), batch[2].to(device)
+
+            with autocast(device_type='cuda'):
+                outputs = model(input_ids, attention_mask=attention_mask)
+                loss = loss_fn(outputs, labels)
+
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
+
+            total_loss += loss.item()
+            _, preds = torch.max(outputs, dim=1)
+            correct_predictions += torch.sum(preds == labels).item()
+            total_predictions += labels.size(0)
+
+            if batch_idx % 10 == 0:  # Print every 10 batches
+                print(f"Epoch [{epoch + 1}/{num_epochs}], Batch [{batch_idx}], Loss: {loss.item():.4f}")
+
+        avg_loss = total_loss / len(train_loader)
+        accuracy = correct_predictions / total_predictions
+        print(f"Epoch {epoch + 1}/{num_epochs}, Training Loss: {avg_loss:.4f}, Accuracy: {accuracy:.4f}")
+
+        # Validation loop
+        model.eval()
+        val_loss, val_correct, val_total = 0, 0, 0
+
+        with torch.no_grad():
+            for batch in val_loader:
+                input_ids, labels, attention_mask = batch[0].to(device), batch[1].to(device), batch[2].to(device)
+
+                with autocast(device_type='cuda'):
+                    outputs = model(input_ids, attention_mask=attention_mask)
