@@ -62,3 +62,69 @@ def preprocess_input_code(code_samples):
     masks = torch.stack(attention_masks)
 
     return tokens, masks
+
+
+# Step 5: Make predictions
+def predict_code_samples(model, code_samples):
+    tokens, masks = preprocess_input_code(code_samples)
+
+    # Move input tensors to the same device as the model
+    tokens = tokens.to(device)
+    masks = masks.to(device)
+
+    with torch.no_grad():
+        outputs = model(tokens, attention_mask=masks)
+        probabilities = torch.nn.functional.softmax(outputs, dim=1)
+
+        # # Find the index of the highest logit
+        # max_index = torch.argmax(outputs).item()
+        # print("Index of highest logit:", max_index)  # Output: 3
+        #
+        # # # Find the value of the highest logit
+        # # max_logit = outputs[max_index].numpy().item()
+        # # print("Highest logit value:", max_logit)  # Output: 3.5
+        #
+        # # # Optional: Find top-k logits and their indices
+        # k = 2
+        # top_k_logits, top_k_indices = torch.topk(outputs, k)
+        # print("Top-k logits:", top_k_logits.tolist())
+        # print("Top-k indices:", top_k_indices.tolist())
+
+    return probabilities.cpu().numpy()
+    #     _, preds = torch.m(outputs, dim=1)
+
+    # return preds.cpu().numpy()  # Return predictions as numpy array
+
+
+# # Load the text file with multiple code snippets
+# with open("sample_code.txt", "r") as file:
+#     file_content = file.read()
+
+# Split based on delimiter '###'
+# code_samples = file_content.split("####")
+# code_samples = [code.strip() for code in code_samples if code.strip()]  # Clean up
+
+def format_code_sample(code):
+    # Remove leading/trailing whitespaces and split into lines
+    lines = code.strip().split("\n")
+    # Strip each line and join with a single space
+    formatted_code = " ".join(line.strip() for line in lines)
+    # Replace multiple spaces with a single space
+    formatted_code = " ".join(formatted_code.split())
+    return formatted_code
+
+
+code_samples = [
+    """class Solution:
+    def findMaximumElegance(self, items: List[List[int]], k: int) -> int:
+        items = sorted(items, key=lambda v: -v[0])
+        res = cur = 0
+        A = []
+        seen = set()
+        for i, (p, c) in enumerate(items):
+            if i < k:
+                if c in seen:
+                    A.append(p)
+                cur += p
+            elif c not in seen:
+                if not A: break
