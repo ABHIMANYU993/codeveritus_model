@@ -62,3 +62,66 @@ class CodeBERTClassifier(nn.Module):
 
     def forward(self, input_ids, attention_mask=None):
         outputs = self.model(input_ids, attention_mask=attention_mask)
+        logits = self.dropout(outputs.logits)
+        return logits
+
+model = CodeBERTClassifier()
+
+# Step 5: Define Optimizer, Loss Function, and Scheduler
+optimizer = AdamW(model.parameters(), lr=1e-5, weight_decay=0.01)
+scheduler = CosineAnnealingLR(optimizer, T_max=10)
+loss_fn = nn.CrossEntropyLoss()
+
+scaler = GradScaler()  # For mixed-precision training
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model.to(device)
+
+# Step 6: Training Loop
+def train_model(model, train_loader, val_loader, optimizer, loss_fn, scheduler, num_epochs=10, patience=4):
+    train_losses, val_losses, train_accuracies, val_accuracies = [], [], [], []
+    best_val_loss, epochs_without_improvement = float('inf'), 0
+
+    for epoch in range(num_epochs):
+        # Training
+        model.train()
+        total_loss, correct_predictions, total_predictions = 0, 0, 0
+        for batch in train_loader:
+            optimizer.zero_grad()
+            input_ids = batch["input_ids"].to(device)
+            attention_mask = batch["attention_mask"].to(device)
+            labels = batch["label"].to(device)
+
+            with autocast():
+                outputs = model(input_ids, attention_mask=attention_mask)
+                loss = loss_fn(outputs, labels)
+
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
+
+            total_loss += loss.item()
+            preds = torch.argmax(outputs, dim=1)
+            correct_predictions += (preds == labels).sum().item()
+            total_predictions += labels.size(0)
+
+        train_loss = total_loss / len(train_loader)
+        train_accuracy = correct_predictions / total_predictions
+        train_losses.append(train_loss)
+        train_accuracies.append(train_accuracy)
+
+        # Validation
+        model.eval()
+        val_loss, val_correct, val_total = 0, 0, 0
+        with torch.no_grad():
+            for batch in val_loader:
+                input_ids = batch["input_ids"].to(device)
+                attention_mask = batch["attention_mask"].to(device)
+                labels = batch["label"].to(device)
+
+                outputs = model(input_ids, attention_mask=attention_mask)
+                loss = loss_fn(outputs, labels)
+
+                val_loss += loss.item()
+                preds = torch.argmax(outputs, dim=1)
+                val_correct += (preds == labels).sum().item()
+                val_total += labels.size(0)
