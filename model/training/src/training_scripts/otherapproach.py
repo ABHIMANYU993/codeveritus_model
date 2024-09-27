@@ -50,3 +50,55 @@ ai_tokens, ai_labels, ai_attention_masks = preprocess_dataset(ai_dataset, 1, 'co
 
 # Combine datasets
 tokens = human_tokens + ai_tokens
+labels = human_labels + ai_labels
+attention_masks = human_attention_masks + ai_attention_masks
+
+# Convert to PyTorch tensors
+tokens = torch.stack(tokens).to(device)  # Move tokens to device immediately
+labels = torch.tensor(labels).to(device)  # Move labels to device immediately
+attention_masks = torch.stack(attention_masks).to(device)  # Move attention masks to device immediately
+
+# Step 3: Split the dataset into training and validation sets
+X_train, X_val, y_train, y_val, masks_train, masks_val = train_test_split(
+    tokens.cpu(), labels.cpu(), attention_masks.cpu(), test_size=0.2, random_state=42
+)
+
+# Create PyTorch Dataset and DataLoader
+train_dataset = torch.utils.data.TensorDataset(X_train, y_train, masks_train)
+val_dataset = torch.utils.data.TensorDataset(X_val, y_val, masks_val)
+
+train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=8, shuffle=True)
+val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=8, shuffle=False)
+
+# Step 4: Define the CodeBERT model
+class CodeBERTClassifier(nn.Module):
+    def __init__(self):
+        super(CodeBERTClassifier, self).__init__()
+        self.model = RobertaForSequenceClassification.from_pretrained("microsoft/codebert-base", num_labels=2)
+
+    def forward(self, input_ids, attention_mask=None):
+        return self.model(input_ids, attention_mask=attention_mask)
+
+# Initialize model
+model = CodeBERTClassifier().to(device)  # Move model to device here
+
+# Step 5: Define optimizer and loss function
+optimizer = AdamW(model.parameters(), lr=2e-5)
+loss_fn = nn.CrossEntropyLoss()
+scaler = GradScaler()  # Initialize gradient scaler for mixed precision
+
+# Step 6: Training loop
+def train_model(model, train_loader, val_loader, optimizer, loss_fn, num_epochs=5):
+    model.train()
+    for epoch in range(num_epochs):
+        total_loss, correct_predictions, total_predictions = 0, 0, 0
+
+        for batch_idx, batch in enumerate(train_loader):
+            optimizer.zero_grad()
+            input_ids, labels, attention_mask = (batch[0].to(device),
+                                                 batch[1].to(device),
+                                                 batch[2].to(device))
+
+            with autocast():  # Use mixed precision
+                outputs = model(input_ids, attention_mask=attention_mask)
+                loss = loss_fn(outputs.logits, labels)
