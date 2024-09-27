@@ -34,3 +34,40 @@ def tokenize_data(dataset):
         encoded = tokenizer.encode_plus(
             code,
             add_special_tokens=True,
+            max_length=512,  # Adjust based on your needs
+            padding='max_length',
+            truncation=True,
+            return_tensors='pt'
+        )
+        tokens.append(encoded['input_ids'])
+        labels.append(label)
+    return tokens, labels
+
+
+# Tokenize the dataset
+tokens, labels = tokenize_data(dataset)
+tokens = torch.cat(tokens)  # Concatenate token tensors
+labels = np.array(labels)
+
+# Split dataset
+X_train, X_val, y_train, y_val = train_test_split(tokens, labels, test_size=0.2, random_state=42)
+
+
+class CodeBERTClassifier(nn.Module):
+    def __init__(self):
+        super(CodeBERTClassifier, self).__init__()
+        self.model = RobertaForSequenceClassification.from_pretrained("microsoft/codebert-base", num_labels=2)
+
+    def forward(self, input_ids, attention_mask):
+        return self.model(input_ids=input_ids, attention_mask=attention_mask)
+
+
+# Instantiate the model
+model = CodeBERTClassifier()
+
+# Create DataLoader
+train_data = TensorDataset(X_train, torch.tensor(y_train))
+val_data = TensorDataset(X_val, torch.tensor(y_val))
+
+train_loader = DataLoader(train_data, batch_size=8, shuffle=True)
+val_loader = DataLoader(val_data, batch_size=8)
