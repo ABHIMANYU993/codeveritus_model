@@ -96,3 +96,53 @@ while True:
                 userId = user_code['userId']
                 codes = user_code.get('codes', [])
                 sample_list = [code for code in codes]
+
+                if sample_list:
+                    # Make predictions using the model
+                    probabilities = predict_code_samples(model, sample_list)
+
+                    # Print results with percentages for each code sample
+                    for idx, (code, prob) in enumerate(zip(sample_list, probabilities)):
+                        ai_generated_prob = prob[1] * 100  # Percentage for AI-generated class (label 1)
+                        human_generated_prob = prob[0] * 100  # Percentage for Human-written class (label 0)
+                        if ai_generated_prob > human_generated_prob:
+                            prediction_labels = [f"{ai_generated_prob:.2f}% Of code similar to AI-generated code."]
+                        else:
+                            prediction_labels = [
+                                f"{human_generated_prob:.2f}% Of code similar to Human-generated code."]
+                    # prediction_labels = ["AI-generated" if pred == 1 else "Human-generated" for pred in predictions]
+                    print(f"Predictions for user {userId}: {prediction_labels}")
+
+                    # Make sure new_data contains both 'processed' and 'processedAt'
+                    new_data = {
+                        'processed': True,  # Set 'processed' to True after predictions are made
+                        'prediction': prediction_labels,  # Store the predictions
+                        'processedAt': time.strftime("%Y-%m-%d %H:%M:%S")  # Current timestamp for 'processedAt'
+                    }
+
+                    # Update the document in MongoDB
+                    result = user_codes_collection.update_one(
+                        {'userId': userId},  # Filter to match the document by _id
+                        {'$set': new_data}  # Set the 'processed' and 'processedAt' fields
+                    )
+
+                    # Check if the update was successful
+                    if result.matched_count > 0:
+                        print(f"Document updated for userId: {userId}")
+                    else:
+                        print(f"No document found for userId: {userId}")
+        else:
+            print("No new submissions found. Waiting...")
+
+    except pymongo.errors.ConnectionFailure as e:
+        print("Could not connect to MongoDB:", e)
+    except pymongo.errors.OperationFailure as e:
+        print(f"Authentication failed: {e}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+    # Wait before checking the database again (interval in seconds)
+    time.sleep(1)
+# update tensorboard logging interval
+
+# comment out experimental code block
