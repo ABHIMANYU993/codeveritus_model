@@ -125,3 +125,69 @@ def train_model(model, train_loader, val_loader, optimizer, loss_fn, scheduler, 
                 preds = torch.argmax(outputs, dim=1)
                 val_correct += (preds == labels).sum().item()
                 val_total += labels.size(0)
+
+        val_loss /= len(val_loader)
+        val_accuracy = val_correct / val_total
+        val_losses.append(val_loss)
+        val_accuracies.append(val_accuracy)
+
+        # Logging
+        print(f"Epoch {epoch + 1}/{num_epochs}")
+        print(f"  Training Loss: {train_loss:.4f}, Accuracy: {train_accuracy:.4f}")
+        print(f"  Validation Loss: {val_loss:.4f}, Accuracy: {val_accuracy:.4f}")
+
+        # Early Stopping
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
+            epochs_without_improvement = 0
+        else:
+            epochs_without_improvement += 1
+            if epochs_without_improvement >= patience:
+                print("Early stopping triggered.")
+                break
+
+        scheduler.step()
+
+    return train_losses, val_losses, train_accuracies, val_accuracies
+
+train_losses, val_losses, train_accuracies, val_accuracies = train_model(
+    model, train_loader, val_loader, optimizer, loss_fn, scheduler, num_epochs=10
+)
+
+
+# Save the trained model
+save_path = f"E:/python-projects/llm/Trained_models/ai-human-jsontrained{max(train_accuracies)}.pth"
+torch.save(model.state_dict(), save_path)
+print(f"Model saved to {save_path}")
+
+# Step 7: Plot Results
+epochs = range(1, len(train_losses) + 1)
+plt.figure(figsize=(12, 5))
+
+plt.subplot(1, 2, 1)
+plt.plot(epochs, train_losses, label="Training Loss")
+plt.plot(epochs, val_losses, label="Validation Loss")
+plt.xlabel("Epochs")
+plt.ylabel("Loss")
+plt.legend()
+
+plt.subplot(1, 2, 2)
+plt.plot(epochs, train_accuracies, label="Training Accuracy")
+plt.plot(epochs, val_accuracies, label="Validation Accuracy")
+plt.xlabel("Epochs")
+plt.ylabel("Accuracy")
+plt.legend()
+
+plt.show()
+
+# refactor variable names for clarity
+
+# tweak dropout parameter for regularization
+
+# add type hints to function signatures
+
+# reformat code to pep8 standards
+
+# improve error message formatting
+
+# update tensorboard logging interval
