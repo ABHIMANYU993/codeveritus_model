@@ -164,3 +164,86 @@ def train_model(model, train_loader, val_loader, optimizer, scheduler, loss_fn, 
         print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {avg_loss:.4f}, Accuracy: {accuracy:.4f}")
 
         # Validation loop
+        model.eval()
+        val_loss = 0
+        val_correct = 0
+        val_total = 0
+        with torch.no_grad():
+            for batch in val_loader:
+                input_ids, labels, attention_mask = batch[0].to(device), batch[1].to(device), batch[2].to(device)
+
+                with autocast():
+                    outputs = model(input_ids, attention_mask=attention_mask)
+                    loss = loss_fn(outputs, labels)
+
+                val_loss += loss.item()
+                _, preds = torch.max(outputs, dim=1)
+                val_correct += torch.sum(preds == labels).item()
+                val_total += labels.size(0)
+
+        avg_val_loss = val_loss / len(val_loader)
+        val_accuracy = val_correct / val_total
+        print(f"Validation Loss: {avg_val_loss:.4f}, Validation Accuracy: {val_accuracy:.4f}")
+
+        # Step the scheduler
+        scheduler.step()
+
+        # Early stopping logic
+        train_losses.append(avg_loss)
+        val_losses.append(avg_val_loss)
+        train_accuracies.append(accuracy)
+        val_accuracies.append(val_accuracy)
+
+        if avg_val_loss < best_val_loss:
+            best_val_loss = avg_val_loss
+            epochs_without_improvement = 0
+        else:
+            epochs_without_improvement += 1
+            if epochs_without_improvement >= patience:
+                print(f"Early stopping triggered after {epoch + 1} epochs.")
+                break
+
+    return train_losses, val_losses, train_accuracies, val_accuracies
+
+
+# Train the model
+train_losses, val_losses, train_accuracies, val_accuracies = train_model(
+    model, train_loader, val_loader, optimizer, scheduler, loss_fn, num_epochs=6, patience=2
+)
+
+# # Save the trained model
+# save_path = f"E:/python-projects/llm/Trained_models/codebert_classifier{max(train_accuracies)}.pth"
+# torch.save(model.state_dict(), save_path)
+# print(f"Model saved to {save_path}")
+
+# Step 7: Plot training and validation loss/accuracy
+epochs_range = range(1, len(train_losses) + 1)
+plt.figure(figsize=(12, 5))
+
+# Plotting Loss
+plt.subplot(1, 2, 1)
+plt.plot(epochs_range, train_losses, label='Training Loss')
+plt.plot(epochs_range, val_losses, label='Validation Loss')
+plt.title('Training and Validation Loss')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+
+# Plotting Accuracy
+plt.subplot(1, 2, 2)
+plt.plot(epochs_range, train_accuracies, label='Training Accuracy')
+plt.plot(epochs_range, val_accuracies, label='Validation Accuracy')
+plt.title('Training and Validation Accuracy')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.legend()
+
+plt.show()
+
+# fix typo in print statement
+
+# tweak dropout parameter for regularization
+
+# update tensorboard logging interval
+
+# update tensorboard logging interval
