@@ -128,3 +128,69 @@ code_samples = [
                 cur += p
             elif c not in seen:
                 if not A: break
+                cur += p - A.pop()
+            seen.add(c)
+            res = max(res, cur + len(seen) * len(seen))
+        return res
+"""
+]
+# # Make predictions
+# predictions = predict_code_samples(model,code_samples)
+# print(predictions)
+
+# # Print results
+# # for code, prediction in zip(new_code_samples, predictions):
+# for idx, (code, prediction) in enumerate(zip(code_samples, predictions)):
+#     label = "AI-generated" if prediction == 1 else "Human-generated"
+#     print(f"Sample {idx+1}:")
+#     print(f"Prediction: {label}\n")
+# for_code= [format_code_sample(code_samples)]
+print(code_samples)
+
+
+# def classify_code_lines(model, code_samples):
+#     results = []  # Store results for all code samples
+#
+#     for idx, code_sample in enumerate(code_samples):
+#         lines = code_sample.strip().split("\n")  # Split each sample into lines
+#         sample_results = []  # Store results for this code sample
+#
+#         for line in lines:
+#             if line.strip():  # Skip empty lines
+#                 formatted_line = format_code_sample(line)  # Format the line
+#                 probabilities = predict_code_samples(model, [formatted_line])  # Predict single line
+#                 ai_generated_prob = probabilities[0][1] * 100  # AI-generated probability
+#                 sample_results.append((line, ai_generated_prob))  # Append line with its probability
+#
+#         results.append(sample_results)  # Append results of this code sample to the main list
+#
+#     return results
+
+
+# ai_probabilities_by_sample = classify_code_lines(model, code_samples)
+
+# for line, ai_prob in ai_probabilities_by_sample:
+#     print(f"Line: {line}")
+#     print(f"AI-generated probability: {ai_prob:.2f}%\n")
+
+# Make predictions
+probabilities = predict_code_samples(model, code_samples)
+
+# Print results with percentages for each code sample
+for idx, (code, prob) in enumerate(zip(code_samples, probabilities)):
+    ai_generated_prob = prob[1] * 100  # Percentage for AI-generated class (label 1)
+    human_generated_prob = prob[0] * 100  # Percentage for Human-written class (label 0)
+    print(f"Sample {idx + 1}:")
+    print(f"Prediction: {ai_generated_prob:.2f}% AI-generated, {human_generated_prob:.2f}% Human-generated\n")
+
+# for sample_idx, sample_results in enumerate(ai_probabilities_by_sample):
+#     print(f"Sample {sample_idx + 1}:")
+#     for line, ai_prob in sample_results:
+#         if ai_prob > 50:  # AI-generated threshold
+#             print(f"[AI] {line} ({ai_prob:.2f}%)")
+#         else:
+#             print(f"[Human] {line} ({ai_prob:.2f}%)")
+#     print("-" * 40)
+# optimize data loading loop
+
+# update docstrings for better readability
