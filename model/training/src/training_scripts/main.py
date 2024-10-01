@@ -71,3 +71,40 @@ val_data = TensorDataset(X_val, torch.tensor(y_val))
 
 train_loader = DataLoader(train_data, batch_size=8, shuffle=True)
 val_loader = DataLoader(val_data, batch_size=8)
+
+# Define optimizer and loss function
+optimizer = AdamW(model.parameters(), lr=1e-5)
+loss_fn = nn.CrossEntropyLoss()
+
+# Training loop
+model.train()
+for epoch in range(3):  # Adjust number of epochs
+    for batch in train_loader:
+        input_ids, labels = batch
+        optimizer.zero_grad()
+        outputs = model(input_ids)
+        loss = loss_fn(outputs.logits, labels)
+        loss.backward()
+        optimizer.step()
+    print(f"Epoch {epoch + 1}, Loss: {loss.item()}")
+
+model.eval()
+correct_predictions = 0
+total_predictions = 0
+
+with torch.no_grad():
+    for batch in val_loader:
+        input_ids, labels = batch
+        outputs = model(input_ids)
+        _, predicted = torch.max(outputs.logits, 1)
+        correct_predictions += (predicted == labels).sum().item()
+        total_predictions += labels.size(0)
+
+accuracy = correct_predictions / total_predictions
+print(f"Validation Accuracy: {accuracy * 100:.2f}%")
+
+# tweak gradient accumulation steps
+
+# comment out experimental code block
+
+# refactor variable names for clarity
