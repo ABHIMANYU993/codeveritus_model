@@ -78,3 +78,43 @@ class TransformerBlock(nn.Module):
 
 
 # Step 4: CodeBERT Classifier (Replicating RobertaForSequenceClassification)
+class RobertaForSequenceClassificationFromScratch(nn.Module):
+    def __init__(self, vocab_size=30522, d_model=768, num_heads=12, num_layers=12, num_labels=2):
+        super(RobertaForSequenceClassificationFromScratch, self).__init__()
+        self.embedding = nn.Embedding(vocab_size, d_model)
+        self.positional_encoding = PositionalEncoding(d_model)
+        self.transformer_blocks = nn.ModuleList([TransformerBlock(d_model, num_heads) for _ in range(num_layers)])
+        self.dropout = nn.Dropout(0.25)
+        self.fc = nn.Linear(d_model, num_labels)
+
+    def forward(self, input_ids, attention_mask=None):
+        x = self.embedding(input_ids)
+        x = self.positional_encoding(x)
+        x = x.permute(1, 0, 2)
+        for block in self.transformer_blocks:
+            x = block(x)
+        x = x.mean(dim=0)
+        x = self.dropout(x)
+        logits = self.fc(x)
+        return logits
+
+    @classmethod
+    def load_pretrained(cls, model_path):
+        model = cls()
+        model.load_state_dict(torch.load(model_path))
+        return model
+
+
+# # Example usage
+# tokenizer = RobertaTokenizerFromScratch.load_pretrained('path_to_tokenizer')
+# model = RobertaForSequenceClassificationFromScratch.load_pretrained('path_to_model')
+# code_sample = "print('Hello World!')"
+# token_ids = torch.tensor([tokenizer.encode(code_sample)])
+# predictions = model(token_ids)
+# print(predictions)
+
+# add type hints to function signatures
+
+# add defensive checks for None values
+
+# optimize data loading loop
