@@ -102,3 +102,55 @@ def train_model(model, train_loader, val_loader, optimizer, loss_fn, num_epochs=
             with autocast():  # Use mixed precision
                 outputs = model(input_ids, attention_mask=attention_mask)
                 loss = loss_fn(outputs.logits, labels)
+
+            scaler.scale(loss).backward()  # Scale the loss for backpropagation
+            scaler.step(optimizer)  # Update the parameters
+            scaler.update()  # Update the scaler
+
+            total_loss += loss.item()
+            _, preds = torch.max(outputs.logits, dim=1)
+            correct_predictions += torch.sum(preds == labels)
+            total_predictions += labels.size(0)
+
+            if batch_idx % 10 == 0:  # Print every 10 batches
+                print(f"Epoch [{epoch + 1}/{num_epochs}], Batch [{batch_idx}], Loss: {loss.item():.4f}")
+
+        avg_loss = total_loss / len(train_loader)
+        accuracy = correct_predictions.double() / total_predictions
+        print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {avg_loss:.4f}, Accuracy: {accuracy:.4f}")
+
+        # Validation loop
+        model.eval()
+        val_correct, val_total = 0, 0
+        with torch.no_grad():
+            for batch in val_loader:
+                input_ids, labels, attention_mask = (batch[0].to(device),
+                                                     batch[1].to(device),
+                                                     batch[2].to(device))
+                outputs = model(input_ids, attention_mask=attention_mask)
+                _, preds = torch.max(outputs.logits, dim=1)
+                val_correct += torch.sum(preds == labels)
+                val_total += labels.size(0)
+
+        val_accuracy = val_correct.double() / val_total
+        print(f"Validation Accuracy: {val_accuracy:.4f}")
+        model.train()
+
+# Train the model
+train_model(model, train_loader, val_loader, optimizer, loss_fn, num_epochs=5)
+
+# Step 7: Save the model
+torch.save(model.state_dict(), 'C:/Users/ABHIMANYU/PycharmProjects/cypherhackathon/Saved_model/codebert_model.pth')
+print("Model saved to 'C:/Users/ABHIMANYU/PycharmProjects/cypherhackathon/Saved_model/codebert_model.pth'")
+
+# add timing metrics to epoch loop
+
+# tweak gradient accumulation steps
+
+# add defensive checks for None values
+
+# remove unused imports
+
+# add debug logging to training loop
+
+# add debug logging to training loop
