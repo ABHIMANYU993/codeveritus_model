@@ -138,3 +138,74 @@ def train_model(model, train_loader, val_loader, optimizer, loss_fn, scheduler, 
                 input_ids, labels, attention_mask = batch[0].to(device), batch[1].to(device), batch[2].to(device)
 
                 with autocast(device_type='cuda'):
+                    outputs = model(input_ids, attention_mask=attention_mask)
+                    loss = loss_fn(outputs, labels)
+                    val_loss += loss.item()
+                    _, preds = torch.max(outputs, dim=1)
+                    val_correct += torch.sum(preds == labels).item()
+                    val_total += labels.size(0)
+
+        avg_val_loss = val_loss / len(val_loader)
+        val_accuracy = val_correct / val_total
+        print(f"Validation Loss: {avg_val_loss:.4f}, Validation Accuracy: {val_accuracy:.4f}")
+
+        scheduler.step(avg_val_loss)
+
+        train_losses.append(avg_loss)
+        val_losses.append(avg_val_loss)
+        train_accuracies.append(accuracy)
+        val_accuracies.append(val_accuracy)
+
+        if avg_val_loss < best_val_loss:
+            best_val_loss = avg_val_loss
+            epochs_without_improvement = 0
+        else:
+            epochs_without_improvement += 1
+            if epochs_without_improvement >= patience:
+                print("Early stopping triggered.")
+                break
+
+    return train_losses, val_losses, train_accuracies, val_accuracies
+
+# Step 8: Train the model
+train_losses, val_losses, train_accuracies, val_accuracies = train_model(
+    model, train_loader, val_loader, optimizer, loss_fn, scheduler, num_epochs=16
+)
+
+# Step 9: Save the trained model
+save_path = f"E:/python-projects/models_training/Novathon-JSS/codebert_json10-{max(train_accuracies)}.pth"
+torch.save(model.state_dict(), save_path)
+save_path = f"E:/python-projects/models_training/Novathon-JSS/codebert_json10-{max(train_accuracies)}.safetensors"
+save_file(model.state_dict(), save_path)
+print(f"Model saved to {save_path}")
+
+# Step 10: Plot training and validation loss/accuracy
+epochs = range(1, len(train_losses) + 1)
+
+plt.figure(figsize=(12, 5))
+
+# Loss plot
+plt.subplot(1, 2, 1)
+plt.plot(epochs, train_losses, 'b', label='Training Loss')
+plt.plot(epochs, val_losses, 'r', label='Validation Loss')
+plt.title('Training and Validation Loss')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+
+# Accuracy plot
+plt.subplot(1, 2, 2)
+plt.plot(epochs, train_accuracies, 'b', label='Training Accuracy')
+plt.plot(epochs, val_accuracies, 'r', label='Validation Accuracy')
+plt.title('Training and Validation Accuracy')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.show()
+torch.cuda.empty_cache()
+
+# tweak dropout parameter for regularization
+
+# tweak gradient accumulation steps
+
+# update batch normalization momentum
