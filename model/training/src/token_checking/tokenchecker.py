@@ -45,3 +45,27 @@ try:
             logits = output.logits
 
         shift_logits = logits[..., :-1, :].contiguous()
+        shift_labels = tokens.input_ids[..., 1:].contiguous()
+        loss_fct = torch.nn.CrossEntropyLoss(reduction='none')
+        loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
+        perplexity = torch.exp(loss.mean())
+        return perplexity.item()
+
+    # Example usage
+    perplexity = calculate_perplexity(code_sample)
+    print(f"Perplexity of the code sample: {perplexity}")
+
+except Exception as e:
+    print(f"An error occurred: {e}")
+
+# reformat code to pep8 standards
+
+# fix off-by-one error in batch indexing
+
+# tweak dropout parameter for regularization
+
+# adjust learning rate scheduler step
+
+# increase batch size for faster training
+
+# tweak dropout parameter for regularization
