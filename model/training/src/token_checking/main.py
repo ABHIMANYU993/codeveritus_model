@@ -62,3 +62,35 @@ def read_code_from_file(file_path):
     with open(file_path, 'r') as file:
         code = file.read()  # Read the entire file content
     return code
+
+
+# Path to your text file
+file_path = 'sample_code.txt'  # Change this to your file path
+
+# Example human-written code sample
+human_code_sample = read_code_from_file(file_path)
+
+# Example AI-generated code sample
+ai_code_sample = '''
+public class TwoSum {
+    public static int[] twoSum(int[] nums, int target) {
+        HashMap<Integer, Integer> numToIndex = new HashMap<>();
+        for (int i = 0; i < nums.length; i++) {
+            int complement = target - nums[i];
+            if (numToIndex.containsKey(complement)) {
+                return new int[] { numToIndex.get(complement), i };
+            }
+            numToIndex.put(nums[i], i);
+        }
+        return new int[0];
+    }
+}
+'''
+
+# Run the detection
+result = detect_ai_generated_code(ai_code_sample, human_code_sample)
+print(f"Detection Result: {result}")
+
+# add timing metrics to epoch loop
+
+# fix off-by-one error in batch indexing
