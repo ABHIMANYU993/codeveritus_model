@@ -1,0 +1,20 @@
+# ==============================================================================
+# CODEVERITUS SYSTEM CORE MODULE
+# ==============================================================================
+# File: model/training/src/token_checking/sample_code.txt
+# Author: ABHIMANYU993
+# Email: abhimanyubadiger1001@gmail.com
+# Project: Codeveritus - AI vs Human Code Classifier
+# Description: Modular component containing system configuration or script details.
+# ==============================================================================
+
+'''
+def two_sum(nums, target):
+    num_to_index = {}
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in num_to_index:
+            return [num_to_index[complement], i]
+        num_to_index[num] = i
+    return []
+'''
