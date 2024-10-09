@@ -21,3 +21,27 @@ try:
                 if (numMap.containsKey(complement)) {
                     return new int[] { numMap.get(complement), i };
                 }
+                numMap.put(nums[i], i);
+            }
+
+            throw new IllegalArgumentException("No two sum solution");
+        }
+
+        public static void main(String[] args) {
+            int[] nums = {2, 7, 11, 15};
+            int target = 9;
+            int[] result = twoSum(nums, target);
+
+            System.out.println("Indices: " + result[0] + ", " + result[1]);
+        }
+    }
+    '''
+
+    # Function to calculate perplexity
+    def calculate_perplexity(text):
+        tokens = tokenizer(text, return_tensors="pt")
+        with torch.no_grad():
+            output = model(**tokens)
+            logits = output.logits
+
+        shift_logits = logits[..., :-1, :].contiguous()
