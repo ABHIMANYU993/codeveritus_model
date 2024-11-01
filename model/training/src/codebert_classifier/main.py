@@ -39,3 +39,45 @@ def tokenize_data(dataset):
             add_special_tokens=True,
             max_length=512,
             padding='max_length',
+            truncation=True,
+            return_tensors='pt'
+        )
+        tokens.append(encoded['input_ids'])
+        attention_masks.append(encoded['attention_mask'])
+        labels.append(label)
+    return tokens, attention_masks, labels
+
+
+# Tokenize the dataset
+tokens, attention_masks, labels = tokenize_data(dataset)
+tokens = torch.cat(tokens)
+attention_masks = torch.cat(attention_masks)
+labels = np.array(labels)
+
+# Split dataset
+X_train, X_val, y_train, y_val, train_masks, val_masks = train_test_split(
+    tokens, labels, attention_masks, test_size=0.2, random_state=42
+)
+
+class CodeBERTClassifier(nn.Module):
+    def __init__(self):
+        super(CodeBERTClassifier, self).__init__()
+        self.model = RobertaForSequenceClassification.from_pretrained("microsoft/codebert-base", num_labels=2)
+
+    def forward(self, input_ids, attention_mask):
+        return self.model(input_ids=input_ids, attention_mask=attention_mask)
+
+
+# Instantiate the model
+model = CodeBERTClassifier()
+
+# Create DataLoader
+train_data = TensorDataset(X_train, train_masks, torch.tensor(y_train))
+val_data = TensorDataset(X_val, val_masks, torch.tensor(y_val))
+
+train_loader = DataLoader(train_data, batch_size=8, shuffle=True)
+val_loader = DataLoader(val_data, batch_size=8)
+
+# Define optimizer using PyTorch's AdamW implementation
+optimizer = torch.optim.AdamW(model.parameters(), lr=1e-5)
+loss_fn = nn.CrossEntropyLoss()
