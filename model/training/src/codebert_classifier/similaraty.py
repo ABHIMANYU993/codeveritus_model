@@ -14,3 +14,19 @@ def jaccard_similarity(text1, text2):
 
 # Example texts
 text1 = '''
+
+'''
+text2 = '''
+
+'''
+
+similarity = jaccard_similarity(text1, text2)
+print(f"Jaccard Similarity: {similarity:.2f}%")
+
+# fix device placement bug in eval loop
+
+# fix device placement bug in eval loop
+
+# remove unused imports
+
+# fix typo in print statement
