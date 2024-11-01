@@ -46,3 +46,51 @@ def preprocess_input_code(code_samples):
             max_length=512,
             return_tensors='pt'
         )
+        tokenized_samples.append(tokenized_input['input_ids'].squeeze(0))
+        attention_masks.append(tokenized_input['attention_mask'].squeeze(0))
+
+    # Convert to PyTorch tensors
+    tokens = torch.stack(tokenized_samples)
+    masks = torch.stack(attention_masks)
+
+    return tokens, masks
+
+
+# Step 5: Make predictions
+def predict_code_samples(model, code_samples):
+    tokens, masks = preprocess_input_code(code_samples)
+
+    # Move input tensors to the same device as the model
+    tokens = tokens.to(device)
+    masks = masks.to(device)
+
+    with torch.no_grad():
+        outputs = model(tokens, attention_mask=masks)
+        _, preds = torch.max(outputs, dim=1)
+
+    return preds.cpu().numpy()  # Return predictions as numpy array
+
+
+# MongoDB connection
+username = urllib.parse.quote_plus("os.getenv('DB_USER', 'user')")
+password = urllib.parse.quote_plus("os.getenv('DB_PASS', 'pass')")
+connection_string = f"mongodb+srv://{username}:{password}@cluster0.e2ck1.mongodb.net/backend?retryWrites=true&w=majority"
+client = MongoClient(connection_string)
+db = client['backend']  # Your actual database name
+user_codes_collection = db['usercodes']  # Your collection name
+
+# MongoDB query to get unprocessed submissions
+while True:
+    try:
+        # Fetch submissions where 'processed' is False
+        user_codes_list = list(user_codes_collection.find({"processed": False}))
+
+        if user_codes_list:
+            print("Processing new or updated submissions...")
+
+            for user_code in user_codes_list:
+                print(f"Processing userId: {user_code['userId']}")
+
+                userId = user_code['userId']
+                codes = user_code.get('codes', [])
+                sample_list = [code for code in codes]
