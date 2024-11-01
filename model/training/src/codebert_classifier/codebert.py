@@ -63,3 +63,69 @@ def preprocess_input_code(code_samples):
             truncation=True,
             max_length=512,
             return_tensors='pt'
+        )
+        tokenized_samples.append(tokenized_input['input_ids'].squeeze(0))
+        attention_masks.append(tokenized_input['attention_mask'].squeeze(0))
+
+    # Convert to PyTorch tensors
+    tokens = torch.stack(tokenized_samples)
+    masks = torch.stack(attention_masks)
+
+    return tokens, masks
+
+
+# Step 6: Make predictions
+def predict_code_samples(model, code_samples):
+    tokens, masks = preprocess_input_code([sample["code"] for sample in code_samples])
+
+    # Move input tensors to the same device as the model
+    tokens = tokens.to(device)
+    masks = masks.to(device)
+
+    with torch.no_grad():
+        outputs = model(tokens, attention_mask=masks)
+        _, preds = torch.max(outputs, dim=1)
+
+    return preds.cpu().numpy()  # Return predictions as numpy array
+
+
+# # Step 7: Store predictions back in MongoDB
+# def save_predictions_to_mongodb(predictions, code_samples):
+#     """Update MongoDB documents with the prediction results."""
+#     for prediction, sample in zip(predictions, code_samples):
+#         label = "AI-generated" if prediction == 1 else "Human-generated"
+
+#         # Update the MongoDB document with the prediction
+#         collection.update_one(
+#             {"_id": sample["_id"]},  # Match by document ID
+#             {"$set": {"prediction": label}}  # Add/Update 'prediction' field
+#         )
+#     print("Predictions saved to MongoDB successfully.")
+
+# # Step 8: Get code samples and make predictions
+# code_samples = get_code_samples_from_mongodb()
+
+# if code_samples:
+#     predictions = predict_code_samples(model, code_samples)
+
+#     # Step 9: Save predictions to MongoDB
+#     save_predictions_to_mongodb(predictions, code_samples)
+
+#     # Print predictions for reference
+#     for code, prediction in zip(code_samples, predictions):
+#         label = "AI-generated" if prediction == 1 else "Human-generated"
+#         print(f"Code:\n{code['code']}\nPrediction: {label}\n")
+# else:
+#     print("No code samples found in MongoDB.")
+
+
+# MongoDB connection
+username = urllib.parse.quote_plus("os.getenv('DB_USER', 'user')")
+password = urllib.parse.quote_plus("os.getenv('DB_PASS', 'pass')")
+connection_string = f"mongodb+srv://{username}:{password}@cluster0.e2ck1.mongodb.net/backend?retryWrites=true&w=majority"
+client = MongoClient(connection_string)
+db = client['backend']  # Your actual database name
+user_codes_collection = db['usercodes']  # Your collection name
+
+# MongoDB query to get unprocessed submissions
+while True:
