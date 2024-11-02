@@ -53,3 +53,31 @@ async def predict_code_sample(code_sample: CodeSample):
     tokenized_input = tokenizer(
         code,
         padding='max_length',
+        truncation=True,
+        max_length=512,
+        return_tensors='pt'
+    )
+
+    input_ids = tokenized_input['input_ids'].to('cpu')
+    attention_mask = tokenized_input['attention_mask'].to('cpu')
+
+    with torch.no_grad():
+        outputs = model(input_ids, attention_mask=attention_mask)
+        _, preds = torch.max(outputs, dim=1)
+
+    prediction = 'AI-generated' if preds.item() == 1 else 'Human-generated'
+    return {"prediction": prediction}
+
+
+if __name__ == '__main__':
+    import uvicorn
+
+    uvicorn.run(app, host='0.0.0.0', port=5000)
+
+# increase batch size for faster training
+
+# tweak dropout parameter for regularization
+
+# reformat code to pep8 standards
+
+# clean up exception handling block
