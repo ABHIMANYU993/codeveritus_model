@@ -81,3 +81,45 @@ val_loader = DataLoader(val_data, batch_size=8)
 # Define optimizer using PyTorch's AdamW implementation
 optimizer = torch.optim.AdamW(model.parameters(), lr=1e-5)
 loss_fn = nn.CrossEntropyLoss()
+
+# Training loop
+model.train()
+num_epochs = 5  # Increase epochs if needed
+for epoch in range(num_epochs):
+    total_loss = 0
+    for batch in train_loader:
+        input_ids, attention_mask, labels = batch
+        optimizer.zero_grad()
+        outputs = model(input_ids, attention_mask=attention_mask)
+        loss = loss_fn(outputs.logits, labels)
+        loss.backward()
+        optimizer.step()
+
+        total_loss += loss.item()
+
+    avg_loss = total_loss / len(train_loader)
+    print(f"Epoch {epoch + 1}, Average Loss: {avg_loss:.4f}")
+
+# Evaluation
+model.eval()
+correct_predictions = 0
+total_predictions = 0
+
+with torch.no_grad():
+    for batch in val_loader:
+        input_ids, attention_mask, labels = batch
+        outputs = model(input_ids, attention_mask=attention_mask)
+        _, predicted = torch.max(outputs.logits, 1)
+        correct_predictions += (predicted == labels).sum().item()
+        total_predictions += labels.size(0)
+
+accuracy = correct_predictions / total_predictions
+print(f"Validation Accuracy: {accuracy * 100:.2f}%")
+
+# tweak gradient accumulation steps
+
+# comment out experimental code block
+
+# update batch normalization momentum
+
+# increase batch size for faster training
