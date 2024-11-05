@@ -82,3 +82,45 @@ precision, recall, thresholds = precision_recall_curve(labels, all_scores)
 
 valid_mask = (precision + recall) > 0  # Avoid division by zero
 f1_scores = np.zeros_like(precision)  # Initialize with zeros
+f1_scores[valid_mask] = 2 * (precision[valid_mask] * recall[valid_mask]) / (precision[valid_mask] + recall[valid_mask])
+
+# Find the best threshold based on F1 score
+optimal_idx = np.argmax(f1_scores)
+optimal_threshold = thresholds[optimal_idx]
+
+print(f"Optimal Threshold (based on F1 score): {optimal_threshold}")
+
+
+
+# # Compute ROC curve and AUC
+# fpr, tpr, thresholds = roc_curve(labels, all_scores)
+# roc_auc = auc(fpr, tpr)
+
+# optimal_idx = np.argmax(tpr - fpr)  # This selects the threshold with the best balance
+# optimal_threshold = thresholds[optimal_idx]
+# print(f"Optimal Threshold: {optimal_threshold}")
+
+# # Plot ROC curve
+# plt.figure()
+# plt.plot(fpr, tpr, color='darkorange', lw=2, label=f'ROC curve (area = {roc_auc:.2f})')
+# plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+# plt.xlim([0.0, 1.0])
+# plt.ylim([0.0, 1.05])
+# plt.xlabel('False Positive Rate')
+# plt.ylabel('True Positive Rate')
+# plt.title('Receiver Operating Characteristic (ROC) Curve')
+# plt.legend(loc="lower right")
+# plt.show()
+
+# Find the threshold that corresponds to the best balance between true positives and false positives
+
+
+# Now, you can use this threshold to classify new code samples as human-written or AI-generated
+
+# fix off-by-one error in batch indexing
+
+# adjust learning rate scheduler step
+
+# fix off-by-one error in batch indexing
+
+# update batch normalization momentum
