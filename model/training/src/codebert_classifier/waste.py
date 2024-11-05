@@ -122,3 +122,65 @@ def predict_code_samples(model, code_samples):
 
 # MongoDB connection
 username = urllib.parse.quote_plus("os.getenv('DB_USER', 'user')")
+password = urllib.parse.quote_plus("os.getenv('DB_PASS', 'pass')")
+# connection_string = f"mongodb+srv://{username}:{password}@cluster0.e2ck1.mongodb.net/backend?retryWrites=true&w=majority"
+client = MongoClient("mongodb://localhost:27017/")
+db = client['qpcode']  # Your actual database name
+user_codes_collection = db['usercodes']  # Your collection name
+
+# MongoDB query to get unprocessed submissions
+while True:
+    try:
+        # Fetch submissions where 'processed' is False
+        user_codes_list = list(user_codes_collection.find({"processed": False}))
+
+        if user_codes_list:
+            print("Processing new or updated submissions...")
+
+            for user_code in user_codes_list:
+                print(f"Processing userId: {user_code['userId']}")
+
+                userId = user_code['userId']
+                codes = user_code.get('codes', [])
+                sample_list = [code for code in codes]
+
+                if sample_list:
+                    # Make predictions using the model
+                    predictions = predict_code_samples(model, sample_list)
+
+                    # Update the document in the database with predictions
+                    prediction_labels = ["AI-generated" if pred == 1 else "Human-generated" for pred in predictions]
+                    print(f"Predictions for user {userId}: {prediction_labels}")
+
+                    # Make sure new_data contains both 'processed' and 'processedAt'
+                    new_data = {
+                        'processed': True,  # Set 'processed' to True after predictions are made
+                        'prediction': prediction_labels,  # Store the predictions
+                        'processedAt': time.strftime("%Y-%m-%d %H:%M:%S")  # Current timestamp for 'processedAt'
+                    }
+
+                    # Update the document in MongoDB
+                    result = user_codes_collection.update_one(
+                        {'userId': userId},  # Filter to match the document by _id
+                        {'$set': new_data}  # Set the 'processed' and 'processedAt' fields
+                    )
+
+                    # Check if the update was successful
+                    if result.matched_count > 0:
+                        print(f"Document updated for userId: {userId}")
+                    else:
+                        print(f"No document found for userId: {userId}")
+        else:
+            print("No new submissions found. Waiting...")
+
+    except pymongo.errors.ConnectionFailure as e:
+        print("Could not connect to MongoDB:", e)
+    except pymongo.errors.OperationFailure as e:
+        print(f"Authentication failed: {e}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+    # Wait before checking the database again (interval in seconds)
+    time.sleep(10)
+
+# add type hints to function signatures
