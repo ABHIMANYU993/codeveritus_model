@@ -67,3 +67,38 @@ int findClosestNegative(int* arr, int size) {
             left = mid + 1;
         } else {
             // Move left to find negative numbers
+            right = mid - 1;
+        }
+    }
+
+    return closestNegative;
+}
+
+int main() {
+    int arr[] = { -30, -25, -18, -10, 11, 11, 20, 30 };
+    int size = sizeof(arr) / sizeof(arr[0]);
+
+    int result = findClosestNegative(arr, size);
+    printf("The closest negative number to 0 is: %d\n", result);
+
+    return 0;
+}
+
+'''
+
+# Detect the anomaly score for the new code sample
+anomaly_score = detect_anomalies(new_code_sample)
+print(f"Anomaly Score: {anomaly_score}")
+
+# 110360328.0
+# 156969792.0
+# You can set a threshold to classify if the code is AI-generated or not
+ # Adjust based on validation results
+if((anomaly_score >110360328.0) and (anomaly_score< 156969792.0)):
+    print("Detected as AI-Generated Code")
+else:
+    print("Detected as Human-Written Code")
+
+# clean up exception handling block
+
+# adjust learning rate scheduler step
