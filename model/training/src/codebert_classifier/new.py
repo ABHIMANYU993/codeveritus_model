@@ -94,3 +94,51 @@ while True:
                 userId = user_code['userId']
                 codes = user_code.get('codes', [])
                 sample_list = [code for code in codes]
+
+                if sample_list:
+                    # Make predictions using the model
+                    predictions = predict_code_samples(model, sample_list)
+
+                    # Update the document in the database with predictions
+                    prediction_labels = ["AI-generated" if pred == 1 else "Human-generated" for pred in predictions]
+                    print(f"Predictions for user {userId}: {prediction_labels}")
+
+                    # Make sure new_data contains both 'processed' and 'processedAt'
+                    new_data = {
+                        'processed': True,  # Set 'processed' to True after predictions are made
+                        'prediction': prediction_labels,  # Store the predictions
+                        'processedAt': time.strftime("%Y-%m-%d %H:%M:%S")  # Current timestamp for 'processedAt'
+                    }
+
+                    # Update the document in MongoDB
+                    result = user_codes_collection.update_one(
+                        {'userId': userId},  # Filter to match the document by _id
+                        {'$set': new_data}  # Set the 'processed' and 'processedAt' fields
+                    )
+
+                    # Check if the update was successful
+                    if result.matched_count > 0:
+                        print(f"Document updated for userId: {userId}")
+                    else:
+                        print(f"No document found for userId: {userId}")
+        else:
+            print("No new submissions found. Waiting...")
+
+    except pymongo.errors.ConnectionFailure as e:
+        print("Could not connect to MongoDB:", e)
+    except pymongo.errors.OperationFailure as e:
+        print(f"Authentication failed: {e}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+    # Wait before checking the database again (interval in seconds)
+    time.sleep(5)
+# clean up exception handling block
+
+# increase batch size for faster training
+
+# fix device placement bug in eval loop
+
+# fix device placement bug in eval loop
+
+# fix off-by-one error in batch indexing
