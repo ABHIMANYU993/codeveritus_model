@@ -113,3 +113,63 @@ for epoch in range(50):  # Increased epoch count
 
     # Adjust learning rate based on the scheduler
     scheduler.step()
+
+    # Evaluate on validation set
+    val_loss = 0.0
+    autoencoder.eval()  # Set model to evaluation mode
+    with torch.no_grad():
+        for val_batch in val_loader:
+            val_inputs = val_batch[0].to(device).float()
+            val_outputs = autoencoder(val_inputs)
+            val_loss += loss_fn(val_outputs, val_inputs).item()
+
+    # Calculate average validation loss
+    avg_val_loss = val_loss / len(val_loader)
+    print(f"Epoch {epoch + 1}, Validation Loss: {avg_val_loss}")
+
+# Save the best model
+torch.save(autoencoder.state_dict(), "C:/Users/ABHIMANYU/PycharmProjects/cypherhackathon/Saved_model/otherapproach.pth")
+print("Model saved.")
+
+
+def detect_anomalies(code_sample):
+    tokenized = tokenizer.encode_plus(
+        code_sample,
+        add_special_tokens=True,
+        max_length=512,
+        padding='max_length',
+        truncation=True,
+        return_tensors='pt'
+    )['input_ids'].to(device)
+
+    with torch.no_grad():
+        reconstructed = autoencoder(tokenized.float())
+        loss = loss_fn(reconstructed, tokenized.float())  # Reconstruction error
+        return loss.item()
+
+
+# Example usage with a human-written code sample
+human_code_sample = '''
+void do_something(int arr[5][10]) {
+    printf("%d\n", arr[0][2]);
+}
+void func() {
+    int *ptr = POINTER_TO_SOMEWHERE;
+    do_something(ptr);
+}
+'''
+
+anomaly_score = detect_anomalies(human_code_sample)
+print(f"Anomaly Score: {anomaly_score}")
+
+# You can set a threshold for the anomaly score to classify the code
+threshold = 0.05  # Example threshold, adjust based on validation results
+
+if((anomaly_score >100000000) and (anomaly_score< 200000000.0)):
+    print("Detected as Human-Written Code")
+else:
+    print("Detected as AI-Generated Code")
+
+# refactor variable names for clarity
+
+# add detailed comments to complex logic
