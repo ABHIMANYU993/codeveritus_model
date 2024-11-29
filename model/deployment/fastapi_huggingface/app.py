@@ -22,3 +22,30 @@ class CodeBERTClassifier(torch.nn.Module):
             num_labels=2,
             cache_dir=os.environ["HF_HOME"]  # Use the custom cache directory
         )
+
+    def forward(self, input_ids, attention_mask=None):
+        outputs = self.model(input_ids, attention_mask=attention_mask)
+        return outputs.logits
+
+def load_model():
+    model = CodeBERTClassifier().to('cpu')
+    model.load_state_dict(torch.load('codebert_model.pth', map_location='cpu'), strict=False)
+    model.eval()
+    tokenizer = RobertaTokenizer.from_pretrained(
+        "microsoft/codebert-base",
+        cache_dir=os.environ["HF_HOME"]  # Use the custom cache directory
+    )
+    return model, tokenizer
+
+model, tokenizer = load_model()
+
+# Request model
+class CodeRequest(BaseModel):
+    code_samples: list[str]
+
+def preprocess_input_code(code_samples):
+    inputs = tokenizer(code_samples, padding="max_length", truncation=True, max_length=512, return_tensors="pt")
+    return inputs["input_ids"], inputs["attention_mask"]
+
+# Predict function
+def predict(code_samples):
