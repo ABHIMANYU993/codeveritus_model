@@ -36,3 +36,41 @@ def download_model_from_gdrive(url, destination):
         print(f"Downloaded the model file to {destination}")
     else:
         print("Failed to download the model file.")
+
+
+# Google Drive download link
+gdrive_url = "https://drive.google.com/file/d/1FeF4C07z0kJM-9t8ra80WtU37UiiUHCe/view?usp=drive_link"
+model_path = "codebert_model.pth"
+
+# Check if model file exists, if not, download it
+if not os.path.exists(model_path):
+    download_model_from_gdrive(gdrive_url, model_path)
+
+# Step 3: Load the trained model
+model = CodeBERTClassifier()
+model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
+model.eval()  # Set the model to evaluation mode
+
+# Move model to GPU if available
+device = torch.device('cpu')
+model.to(device)
+
+# Step 4: Load the tokenizer
+tokenizer = RobertaTokenizer.from_pretrained("microsoft/codebert-base")
+
+
+# Step 5: Preprocess the input code samples
+def preprocess_input_code(code_samples):
+    tokenized_samples = []
+    attention_masks = []
+
+    for code_sample in code_samples:
+        tokenized_input = tokenizer(
+            code_sample,
+            padding='max_length',
+            truncation=True,
+            max_length=512,
+            return_tensors='pt'
+        )
+        tokenized_samples.append(tokenized_input['input_ids'].squeeze(0))
+        attention_masks.append(tokenized_input['attention_mask'].squeeze(0))
