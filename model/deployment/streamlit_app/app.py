@@ -50,3 +50,31 @@ def preprocess_input_code(code_samples, tokenizer):
         )
         tokenized_samples.append(tokenized_input['input_ids'].squeeze(0))
         attention_masks.append(tokenized_input['attention_mask'].squeeze(0))
+
+    # Convert to PyTorch tensors
+    tokens = torch.stack(tokenized_samples)
+    masks = torch.stack(attention_masks)
+    return tokens, masks
+
+# Make predictions
+def predict_code_samples(model, tokenizer, code_samples):
+    tokens, masks = preprocess_input_code(code_samples, tokenizer)
+
+    # Move input tensors to the same device as the model
+    tokens = tokens.to(device)
+    masks = masks.to(device)
+
+    with torch.no_grad():
+        outputs = model(tokens, attention_mask=masks)
+        _, preds = torch.max(outputs, dim=1)
+        prediction_labels = ["AI-generated" if pred == 1 else "Human-generated" for pred in preds.cpu().numpy()]
+    return prediction_labels
+
+# Streamlit UI
+st.title("AI Code Detector")
+code_input = st.text_area("Enter your code sample here:", height=300)
+
+if st.button("Predict"):
+    model, tokenizer = load_model()
+    prediction = predict_code_samples(model, tokenizer, [code_input])
+    st.write(f"Prediction: **{prediction[0]}**")
