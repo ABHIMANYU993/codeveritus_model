@@ -49,3 +49,29 @@ def preprocess_input_code(code_samples):
 
 # Predict function
 def predict(code_samples):
+    tokens, masks = preprocess_input_code(code_samples)
+    with torch.no_grad():
+        logits = model(tokens, attention_mask=masks)
+        probabilities = torch.nn.functional.softmax(logits, dim=1).numpy()
+    return probabilities
+
+
+@app.get("/")  # This route ensures the API is reachable
+def home():
+    return {"message": "API is running!"}
+
+# API endpoint for prediction
+@app.post("/predict/")
+async def predict_code(request: CodeRequest):
+    probabilities = predict(request.code_samples)
+    results = [{"AI": f"{prob[1]*100:.2f}%", "Human": f"{prob[0]*100:.2f}%"} for prob in probabilities]
+    return {"predictions": results}
+@app.post("/detect/")
+async def predict_code(request: CodeRequest):
+    probabilities = predict(request.code_samples)
+    results = [{"AI": f"{prob[1]*100:.2f}%", "Human": f"{prob[0]*100:.2f}%"} for prob in probabilities]
+    return {"predictions": results}
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 7860))  # Ensure it uses 7860
+    uvicorn.run(app, host="0.0.0.0", port=port)
