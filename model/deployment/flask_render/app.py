@@ -74,3 +74,42 @@ def preprocess_input_code(code_samples):
         )
         tokenized_samples.append(tokenized_input['input_ids'].squeeze(0))
         attention_masks.append(tokenized_input['attention_mask'].squeeze(0))
+
+    tokens = torch.stack(tokenized_samples)
+    masks = torch.stack(attention_masks)
+
+    return tokens, masks
+
+
+# Step 6: Make predictions
+def predict_code_samples(model, code_samples):
+    tokens, masks = preprocess_input_code(code_samples)
+
+    tokens = tokens.to(device)
+    masks = masks.to(device)
+
+    with torch.no_grad():
+        outputs = model(tokens, attention_mask=masks)
+        _, preds = torch.max(outputs, dim=1)
+
+    return preds.cpu().numpy()
+
+
+# Step 7: Define the API endpoint
+@app.route("/predict", methods=["POST"])
+def predict():
+    data = request.json
+    code_samples = data.get("code_samples", [])
+
+    if not code_samples:
+        return jsonify({"error": "No code samples provided"}), 400
+
+    # Make predictions using the model
+    predictions = predict_code_samples(model, code_samples)
+    prediction_labels = ["AI-generated" if pred == 1 else "Human-generated" for pred in predictions]
+
+    return jsonify({"predictions": prediction_labels})
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
