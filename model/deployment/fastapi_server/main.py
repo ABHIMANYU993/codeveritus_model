@@ -42,3 +42,26 @@ def predict_code(code_input: CodeInput):
     tokenized_samples = []
     attention_masks = []
     for code_sample in code_samples:
+        tokenized_input = tokenizer(
+            code_sample,
+            padding='max_length',
+            truncation=True,
+            max_length=512,
+            return_tensors='pt'
+        )
+        tokenized_samples.append(tokenized_input['input_ids'].squeeze(0))
+        attention_masks.append(tokenized_input['attention_mask'].squeeze(0))
+
+    # Convert to PyTorch tensors
+    tokens = torch.stack(tokenized_samples)
+    masks = torch.stack(attention_masks)
+
+    # Move input tensors to the same device as the model
+    tokens = tokens.to(device)
+    masks = masks.to(device)
+
+    with torch.no_grad():
+        outputs = model(tokens, attention_mask=masks)
+        _, preds = torch.max(outputs, dim=1)
+    prediction_labels = ["AI-generated" if pred == 1 else "Human-generated" for pred in preds.cpu().numpy()]
+    return {"predictions": prediction_labels}
