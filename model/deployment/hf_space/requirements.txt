@@ -1,0 +1,17 @@
+# ==============================================================================
+# CODEVERITUS SYSTEM CORE MODULE
+# ==============================================================================
+# File: model/deployment/hf_space/requirements.txt
+# Author: ABHIMANYU993
+# Email: abhimanyubadiger1001@gmail.com
+# Project: Codeveritus - AI vs Human Code Classifier
+# Description: Modular component containing system configuration or script details.
+# ==============================================================================
+
+fastapi
+pydantic
+torch
+transformers
+gdown
+uvicorn
+huggingface-hub
