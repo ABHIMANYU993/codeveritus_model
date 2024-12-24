@@ -23,3 +23,29 @@ exports.adminsSignup = async (req, res) => {
       adminname,
       email,
       password: hashedPassword,
+    });
+
+    await newUser.save();
+    res.status(201).json({ message: `${adminname} registered successfully` });
+  } catch (error) {
+    console.error("Signup error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// API: admin Login
+exports.adminsLogin = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    // Find admin by email
+    const admin = await Admin.findOne({ email });
+    if (!admin) return res.status(400).json({ message: "Invalid credentials" });
+
+    // Compare password
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    const token = jwt.sign(
+      { adminId: admin._id, role: "admin" },
