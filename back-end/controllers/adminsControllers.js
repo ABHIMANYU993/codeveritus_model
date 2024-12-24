@@ -49,3 +49,29 @@ exports.adminsLogin = async (req, res) => {
 
     const token = jwt.sign(
       { adminId: admin._id, role: "admin" },
+      process.env.JWT_SECRET_TOKEN
+    );
+
+    res.json({
+      message: `${admin.role}login successful`,
+      adminname: admin.adminname,
+      jwtToken: token,
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// API: Get all submitted user codes (including usernames)
+exports.seeCode = async (req, res) => {
+  try {
+    const userCodes = await UserCode.find()
+      .sort({ submittedAt: -1 })
+      .populate("username"); // Fetch all user codes
+    res.json(userCodes);
+  } catch (error) {
+    console.error("Error fetching user codes:", error);
+    res.status(500).json({ message: "Error fetching user codes" });
+  }
+};
