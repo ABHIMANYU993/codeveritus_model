@@ -133,3 +133,71 @@ exports.codeSubmit = async (req, res) => {
 //
 // // usersLogin function remains the same...
 // exports.usersLogin = async (req, res) => {
+//   const { email, password } = req.body;
+//   try {
+//     const user = await User.findOne({ email });
+//     if (!user) return res.status(400).json({ message: "Invalid credentials" });
+//     const isMatch = await bcrypt.compare(password, user.password);
+//     if (!isMatch) {
+//       return res.status(400).json({ message: "Invalid credentials" });
+//     }
+//     const token = jwt.sign(
+//       { userId: user._id, role: user.role },
+//       process.env.JWT_SECRET_TOKEN
+//     );
+//     res.json({
+//       message: `${user.role} login successful`,
+//       username: user.username,
+//       jwtToken: token,
+//     });
+//   } catch (error) {
+//     console.error("Login error:", error);
+//     res.status(500).json({ message: "Server error" });
+//   }
+// };
+//
+// // --- MODIFIED codeSubmit FUNCTION ---
+// exports.codeSubmit = async (req, res) => {
+//   try {
+//     // 1. Get userId from the token, not username from the body
+//     const { userId } = req.user;
+//     const { code_samples } = req.body;
+//
+//     const user = await User.findById(userId);
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found." });
+//     }
+//
+//     if (!code_samples || !code_samples.length) {
+//       return res
+//         .status(400)
+//         .json({ message: "code_samples are required." });
+//     }
+//
+//     // Call external detection API
+//     const detectionResponse = await axios.post(
+//       `${MODEL_API}/detect/`,
+//       { code_samples: code_samples }
+//     );
+//     const { data } = detectionResponse;
+//
+//     // 2. Use the validated username from the database
+//     await UserCode.findOneAndUpdate(
+//       { username: user.username },
+//       {
+//         codes: code_samples,
+//         detectionResult: data,
+//         submittedAt: new Date()
+//       },
+//       { upsert: true, new: true, strict: true }
+//     );
+//
+//     res.status(201).json({
+//       message: "User codes saved successfully!",
+//       detectionResult: data,
+//     });
+//   } catch (error) {
+//     console.error("Error in code submission:", error);
+//     res.status(500).json({ message: "Error saving user codes" });
+//   }
+// };
