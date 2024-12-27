@@ -17,3 +17,11 @@
 - Details: Weights used in the deployed Docker space on Hugging Face.
 - Deployment URL: https://huggingface.co/spaces/ABHIMANYU993/AI-Code-Detector
 
+
+### Asset: 184815-874271897_medium.mp4
+- Path: `front-end/public/184815-874271897_medium.mp4`
+- Size: 6.5 MB
+- Format: MP4 Video
+- Role: Background video for React landing page features.
+- Details: High-quality background visual showing digital network connections.
+
