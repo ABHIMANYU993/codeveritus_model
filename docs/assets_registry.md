@@ -25,3 +25,11 @@
 - Role: Background video for React landing page features.
 - Details: High-quality background visual showing digital network connections.
 
+
+### Asset: 3130182-uhd_3840_2160_30fps.mp4
+- Path: `front-end/public/3130182-uhd_3840_2160_30fps.mp4`
+- Size: 20.8 MB
+- Format: MP4 Video
+- Role: Main intro video for React landing page hero section.
+- Details: Ultra-HD background looping video showing code visualization and analytics.
+
