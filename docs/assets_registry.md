@@ -47,3 +47,10 @@
 - Role: Secondary logo asset.
 - Details: Circular logo variant.
 
+
+### Asset: logo.png
+- Path: `front-end/public/logo.png`
+- Format: PNG Image
+- Role: Primary application branding logo.
+- Details: High-fidelity application logo used in headers.
+
