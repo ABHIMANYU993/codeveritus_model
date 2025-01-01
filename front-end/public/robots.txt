@@ -1,0 +1,13 @@
+# ==============================================================================
+# CODEVERITUS SYSTEM CORE MODULE
+# ==============================================================================
+# File: front-end/public/robots.txt
+# Author: ABHIMANYU993
+# Email: abhimanyubadiger1001@gmail.com
+# Project: Codeveritus - AI vs Human Code Classifier
+# Description: Modular component containing system configuration or script details.
+# ==============================================================================
+
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Disallow:
