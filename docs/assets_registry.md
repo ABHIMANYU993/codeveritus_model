@@ -61,3 +61,10 @@
 - Role: React manifest logo (192x192).
 - Details: Mobile-friendly branding asset.
 
+
+### Asset: logo512.png
+- Path: `front-end/public/logo512.png`
+- Format: PNG Image
+- Role: React manifest logo (512x512).
+- Details: High-res branding asset for PWA install.
+
