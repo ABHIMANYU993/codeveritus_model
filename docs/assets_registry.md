@@ -54,3 +54,10 @@
 - Role: Primary application branding logo.
 - Details: High-fidelity application logo used in headers.
 
+
+### Asset: logo192.png
+- Path: `front-end/public/logo192.png`
+- Format: PNG Image
+- Role: React manifest logo (192x192).
+- Details: Mobile-friendly branding asset.
+
