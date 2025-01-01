@@ -33,3 +33,10 @@
 - Role: Main intro video for React landing page hero section.
 - Details: Ultra-HD background looping video showing code visualization and analytics.
 
+
+### Asset: favicon.ico
+- Path: `front-end/public/favicon.ico`
+- Format: ICO Image
+- Role: Website tab icon for Codeveritus frontend.
+- Details: Custom branding favicon.
+
