@@ -40,3 +40,10 @@
 - Role: Website tab icon for Codeveritus frontend.
 - Details: Custom branding favicon.
 
+
+### Asset: llogo.jpg
+- Path: `front-end/public/llogo.jpg`
+- Format: JPEG Image
+- Role: Secondary logo asset.
+- Details: Circular logo variant.
+
