@@ -68,3 +68,10 @@
 - Role: React manifest logo (512x512).
 - Details: High-res branding asset for PWA install.
 
+
+### Asset: logot.png
+- Path: `front-end/public/logot.png`
+- Format: PNG Image
+- Role: Transparent branding logo.
+- Details: Used across Navbars and Hero section headers.
+
