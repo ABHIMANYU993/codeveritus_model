@@ -1,0 +1,43 @@
+.results-page {
+  background: linear-gradient(135deg, #2c3e50, #fd746a);
+  min-height: 100vh;
+  padding: 20px 0;
+}
+
+.page-title {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 1.4rem;
+  color: #dcdcdc;
+  margin-bottom: 40px;
+}
+
+.results-container {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  margin-top: 20px;
+}
+
+/* Table Styling */
+.table {
+  width: 90%;
+  margin: 0 auto;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 15px;
+  color: #fff;
+  font-size: 1rem;
+}
