@@ -1,0 +1,93 @@
+
+.login-container {
+  display: flex;
+  justify-content: space-between;
+  max-width: 900px;
+  margin: 100px auto;
+  padding: 20px;
+  background: linear-gradient(135deg, #1c1c1c 30%, #2c2c2c 100%);
+  border-radius: 15px;
+  z-index: 1;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+  
+}
+
+.login-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.7);
+}
+
+.content-section {
+  flex: 1;
+  padding: 20px;
+  margin-right: 20px;
+  background-color: rgba(255, 255, 255, 0.1); 
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+  animation: fadeIn 0.5s ease; 
+}
+
+.loading-spinner {
+  border: 4px solid rgba(246, 239, 239, 0.919);
+  border-left-color: rgb(228, 7, 7);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-section {
+  flex: 1;
+  padding: 20px;
+  border-left: 1px solid #444;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.content-section h2 {
+  font-size: 36px;
+  color: #b16c6c; 
+  font-weight: 700;
+  margin-bottom: 15px;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(255, 87, 34, 0.5);
+}
+
+.content-section p {
+  line-height: 1.8;
+  font-size: 16px;
+  color: #ddd; 
+  font-weight: 400;
+  text-align: center;
+  transition: transform 0.3s;
+}
+
+
+.content-section p:hover {
+  transform: scale(1.05);  
+}
+
+
+.tabs {
+  display: flex;
+  justify-content: space-evenly;
+  margin-bottom: 25px;
+}
