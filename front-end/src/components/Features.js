@@ -27,3 +27,32 @@ const Features = () => {
             <li>
               <FontAwesomeIcon icon={faComments} className="me-2" />
               Comment and formatting tweaks
+            </li>
+          </ul>
+        </div>
+        <div className="features col-md-6 feature-box">
+          <h4>Detection Tiers – Nothing Slips Through the Cracks</h4>
+          <ul>
+            <li>
+              <span style={{ fontWeight: 'bold', color: '#2C2D2D' }}>Tier 1:</span> Catch minor comment edits and formatting changes.
+            </li>
+            <li>
+              <span style={{ fontWeight: 'bold', color: '#2C2D2D' }}>Tier 2:</span> Expose variable or function name swaps with ease.
+            </li>
+            <li>
+              <span style={{ fontWeight: 'bold', color: '#2C2D2D' }}>Tier 3:</span> Detect restructuring of code modules or shifted logic blocks.
+            </li>
+            <li>
+              <span style={{ fontWeight: 'bold', color: '#2C2D2D' }}>Tier 4:</span> Identify tweaked declarations or minor logic alterations.
+            </li>
+            <li>
+              <span style={{ fontWeight: 'bold', color: '#2C2D2D' }}>Tier 5:</span> Spot complex control flow changes like altered loops and conditionals.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Features;
