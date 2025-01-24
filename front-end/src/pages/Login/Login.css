@@ -91,3 +91,96 @@
   justify-content: space-evenly;
   margin-bottom: 25px;
 }
+
+.tab {
+  flex: 1;
+  padding: 14px;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.15); 
+  border-radius: 8px;
+  transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+
+
+.tab.active {
+  background-color: #cf1919; 
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 0 20px rgba(255, 87, 34, 0.7);
+  transform: scale(1.05);
+}
+
+.login-form h2 {
+  margin-bottom: 20px;
+  font-size: 28px;
+  color: #fff; 
+  font-weight: 600;
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(255, 87, 34, 0.5);
+}
+
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.form-group label {
+  font-weight: 500;
+  display: block;
+  margin-bottom: 5px;
+  color: #fff;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid #444; 
+  border-radius: 5px;
+  background-color: #333; 
+  color: #fff; 
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-group input:focus {
+  border-color: #cf1919;
+  box-shadow: 0 0 10px rgba(255, 87, 34, 0.5);
+  outline: none;
+}
+
+/* Button Styles */
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  background: linear-gradient(45deg, #cf1919, #cf1919);
+  color: white;
+  border-radius: 25px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 25px rgba(255, 87, 34, 0.8);
+}
+
+.btn-primary:hover {
+  animation: pulse 1s infinite; 
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.signup-option {
+  margin-top: 20px;
+  font-weight: 600;
