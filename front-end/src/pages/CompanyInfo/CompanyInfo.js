@@ -19,3 +19,24 @@ const CompanyInfo = () => {
  
   useEffect(() => {
     const now = new Date();
+    const start = formatTime(now);
+
+    const end = new Date(now.getTime() + 60 * 60 * 1000); 
+    const endFormatted = formatTime(end);
+
+    setStartTime(start);
+    setEndTime(endFormatted);
+  }, []);
+
+  const handleProceed = () => {
+    navigate('/selectusers');
+  };
+
+  return (
+    <div className="company-container">
+      <div className="content-box animate-fade-in">
+        <h1 className="heading animate-slide-down">Welcome to CodeVeritus</h1>
+
+        <p className="description">
+          This session on our platform is designed to help conduct seamless coding interviews.
+          You are allotted the following session time:
