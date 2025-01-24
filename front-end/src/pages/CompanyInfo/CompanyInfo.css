@@ -39,3 +39,44 @@
   .session-details p {
     font-size: 1.125rem;
     margin: 5px 0;
+  }
+  
+  .note {
+    margin-top: 10px;
+    font-size: 0.875rem;
+    color: #b27e7e;
+  }
+  
+  .proceed-button {
+    margin-top: 20px;
+    padding: 12px 24px;
+    background-color: #f75555;
+    color: white;
+    font-size: 1.125rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease;
+  }
+  
+  .proceed-button:hover {
+    background-color: #ea3333;
+    transform: scale(1.05);
+  }
+  
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slide-down {
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    to {
