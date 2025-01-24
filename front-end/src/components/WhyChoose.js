@@ -23,3 +23,28 @@ const WhyChoose = () => {
           </div>
           <div className="col-md-4 feature-box">
             <FontAwesomeIcon 
+              icon={faBrain} 
+              size="3x" 
+              className="mb-3" 
+              style={{ color: '#e74c3c' }} 
+            />
+            <h4>Advanced Detection</h4>
+            <p>Harnessing powerful algorithms for smarter decisions</p>
+          </div>
+          <div className="col-md-4 feature-box">
+            <FontAwesomeIcon 
+              icon={faTasks} 
+              size="3x" 
+              className="mb-3" 
+              style={{ color: '#e74c3c' }}
+            />
+            <h4>Batch Submissions</h4>
+            <p>Process them all in one go!</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default WhyChoose;
