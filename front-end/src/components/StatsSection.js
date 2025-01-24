@@ -26,3 +26,32 @@ const StatsSection = () => {
                 end={5000000}
                 duration={2.5}
                 separator=","
+                formattingFn={(value) => `${(value / 1000000).toFixed(1)}M`}
+              />
+            ) : (
+              '0M'
+            )}
+          </h3>
+          <p>Coding interviews conducted globally</p>
+        </div>
+        <div className="col-md-4 text-center">
+          <h3>
+            {inView ? <CountUp end={30} duration={2.5} /> : '0'}%
+          </h3>
+          <p>of candidates tried to game the system by copy-pasting code</p>
+        </div>
+        <div className="col-md-4 text-center">
+          <h3>
+            {inView ? <CountUp end={72} duration={2.5} /> : '0'}%
+          </h3>
+          <p>of CS students admitted to copying code at least once</p>
+        </div>
+      </div>
+      <p className="mt-4 text-center text-light">
+      Traditional tools fail to catch cleverly concealed Code forgery. CodeVeritus ensures you’re always one step ahead.
+      </p>
+    </section>
+  );
+};
+
+export default StatsSection;
