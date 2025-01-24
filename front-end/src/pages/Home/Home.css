@@ -71,3 +71,76 @@ body {
     padding: 30px;
     border-radius: 10px;
     background-color: #a19fa4;
+    transition: all 0.3s;
+    animation: bounceIn 1s;
+  }
+
+  .feature-box:hover {
+    background-color: #d6d8db;
+    transform: scale(1.05);
+  }
+
+  .features ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .features ul li {
+      position: relative;
+      padding-left: 30px;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+      transition: color 0.3s;
+    }
+
+    .features ul li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: #a6573a;
+      font-size: 1.3rem;
+    }
+
+    .features ul li:hover {
+      color: #bf6d6e;
+    }
+
+
+  .quote {
+    font-style: italic;
+    color: #ca3535;
+  }
+
+  .hero-section .btn-custom {
+    background-color: #5e3d43;
+    color: white;
+    border: none;
+    transition: background-color 0.3s, transform 0.3s;
+  }
+
+  .hero-section .btn-custom:hover {
+    background-color: #942537;
+    transform: scale(1.05);
+  }
+
+  .btn-light {
+    transition: background-color 0.3s, transform 0.3s;
+  }
+
+  .btn-light:hover {
+    background-color: #f38a93;
+    color: #0f101d;
+    transform: scale(1.05);
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideIn {
+    from {
