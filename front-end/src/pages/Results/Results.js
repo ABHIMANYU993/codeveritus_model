@@ -60,3 +60,65 @@ const ResultsPage = () => {
             prediction: parsePrediction(rawPrediction),
           };
         });
+        setResults(formattedResults);
+      } catch (err) {
+        console.error("Error fetching results:", err);
+        if (err.response?.status === 401) {
+          localStorage.removeItem("jwtToken");
+          navigate("/login");
+        }
+        setError(
+          err.response?.data?.message ||
+          "Failed to load results. Please try again."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchResults();
+  }, [navigate]);
+
+  const handleRowClick = (index) => {
+    setExpandedRow(expandedRow === index ? null : index);
+  };
+
+  if (loading) {
+    return (
+      <div className="loading-text animate__animated animate__fadeIn">
+        Loading results...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="alert alert-danger text-center my-5 animate__animated animate__shakeX">
+        {error}
+      </div>
+    );
+  }
+
+  return (
+    <div className="results-page">
+      <div className="container py-5 my-5 animate__animated animate__fadeIn">
+        <h2 className="page-title text-center">Code Submitted by Users</h2>
+        <p className="text-center subtitle">
+          Click on a row to view the submitted code and additional details.
+        </p>
+
+        <div className="results-container">
+          {results.length > 0 ? (
+            <table className="table table-striped">
+              <thead>
+                <tr>
+                  <th>Sl No.</th>
+                  <th>Username</th>
+                  <th>Prediction</th>
+                  <th className="text-center">View</th>
+                </tr>
+              </thead>
+              <tbody>
+                {results.map((result, index) => (
+                  <React.Fragment key={index}>
+                    <tr
