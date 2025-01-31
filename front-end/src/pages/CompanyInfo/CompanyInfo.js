@@ -40,3 +40,24 @@ const CompanyInfo = () => {
         <p className="description">
           This session on our platform is designed to help conduct seamless coding interviews.
           You are allotted the following session time:
+        </p>
+
+        <div className="session-details animate-zoom-in">
+          <h2>Session Details</h2>
+          <p>Duration: <strong>1 hour</strong></p>
+          <p>Start Time: <strong>{startTime}</strong></p>
+          <p>End Time: <strong>{endTime}</strong></p>
+          <p className="note">
+            Please complete your tasks within the scheduled time.
+          </p>
+        </div>
+
+        <button onClick={handleProceed} className="proceed-button animate-bounce">
+          Proceed to Code Workspace
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default CompanyInfo;
