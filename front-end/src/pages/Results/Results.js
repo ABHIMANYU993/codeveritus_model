@@ -122,3 +122,66 @@ const ResultsPage = () => {
                 {results.map((result, index) => (
                   <React.Fragment key={index}>
                     <tr
+                      onClick={() => handleRowClick(index)}
+                      style={{ cursor: "pointer" }}
+                      className={expandedRow === index ? "table-active" : ""}
+                    >
+                      <td>{index + 1}</td>
+                      <td>{result.username || result.userId}</td>
+                      <td>{result.prediction}</td>
+                      <td className="text-center">
+                        {expandedRow === index ? (
+                          <FaChevronUp />
+                        ) : (
+                          <FaChevronDown />
+                        )}
+                      </td>
+                    </tr>
+                    {expandedRow === index && (
+                      <tr>
+                        <td colSpan="4">
+                          <div className="expanded-content">
+                            <h6>Submitted Code:</h6>
+                            <pre className="code-block">
+                              {result.codes.join("\n")}
+                            </pre>
+                            <div className="mt-3">
+                              <p>
+                                <strong>Prediction:</strong> {result.prediction}
+                              </p>
+                              {result.submittedAt && (
+                                <p>
+                                  <strong>Submitted At:</strong>{" "}
+                                  {new Date(result.submittedAt).toLocaleString(
+                                    "en-IN",
+                                    { timeZone: "Asia/Kolkata" }
+                                  )}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="alert alert-warning text-center animate__animated animate__bounceIn">
+              No results to display. Please submit some code for analysis.
+            </div>
+          )}
+        </div>
+
+        <div className="text-center mt-4">
+          <Link to="/" className="btn btn-primary back-button">
+            <FaArrowLeft className="me-2" /> Go Back
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ResultsPage;
