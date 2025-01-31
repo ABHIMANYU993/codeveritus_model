@@ -137,3 +137,73 @@ const Login = ({ videoSrc }) => {
 
               <button type="submit" className="btn btn-primary" disabled={isLoading}>
                 {isLoading ? (
+                  <div className="loading-spinner" style={{ margin: '0 auto' }} />
+                ) : (
+                  'Login'
+                )}
+              </button>
+
+              <p className="signup-option">
+                Don't have an account?{' '}
+                <span className="signup-link" onClick={() => setIsSignUp(true)}>
+                  Sign Up
+                </span>
+              </p>
+            </form>
+          ) : (
+            <form className="login-form" onSubmit={handleSignUp}>
+              <h2>{activeTab === 'user' ? 'User Sign Up' : 'Admin Sign Up'}</h2>
+
+              <div className="form-group">
+                <label>Username</label>
+                <input
+                  type="text"
+                  name="username"
+                  value={credentials.username}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={credentials.email}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  value={credentials.password}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+
+              {errorMessage && <p className="error-message">{errorMessage}</p>}
+              {successMessage && <p className="success-message">{successMessage}</p>}
+
+              <button type="submit" className="btn btn-primary">Sign Up</button>
+
+              <p className="signup-option">
+                Already have an account?{' '}
+                <span className="signup-link" onClick={() => setIsSignUp(false)}>
+                  Login
+                </span>
+              </p>
+            </form>
+          )}
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Login;
