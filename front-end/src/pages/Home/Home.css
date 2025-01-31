@@ -144,3 +144,76 @@ body {
 
   @keyframes slideIn {
     from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes bounceIn {
+    from {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  @media (max-width: 768px) {
+    .hero-section h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero-section p {
+        font-size: 1rem;
+    }
+
+    .stats-section h3 {
+        font-size: 1.6rem;
+    }
+
+    .feature-box {
+        padding: 15px;
+    }
+    .feature-box:hover {
+      transform: scale(1.03); /* Subtle scaling for tablets */
+  }
+}
+
+@media (max-width: 480px) {
+    .hero-section {
+        padding: 50px 10px;
+    }
+
+    .hero-section h1 {
+        font-size: 2rem;
+    }
+
+    .hero-section p {
+        font-size: 0.9rem;
+    }
+
+    .stats-section {
+        padding: 20px 5px;
+    }
+
+    .stats-section h3 {
+        font-size: 1.4rem;
+    }
+
+    .feature-box {
+        padding: 10px;
+    }
+
+    .features ul li {
+        font-size: 0.9rem;
+    }
+    .feature-box:hover {
+      transform: none; /* No scaling for small screens to avoid overlap or clutter */
+      background-color: #d3d3d3; /* Change only the background color for hover */
+  }
+}
