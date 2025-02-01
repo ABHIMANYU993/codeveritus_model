@@ -69,3 +69,39 @@ const SelectUsersPage = ({ videoSrc, currentUser }) => { // Add currentUser as p
             rows="5"
           />
           <button
+            className="btn btn-primary submit-button"
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <div className="submitting-content">
+                <span>Submitting...</span>
+              </div>
+            ) : (
+              'Submit Code'
+            )}
+          </button>
+
+          {submittedCode && (
+            <div className="mt-4 p-3 bg-light text-dark rounded">
+              <h5>Submitted Code:</h5>
+              <pre className="submitted-code">{submittedCode}</pre>
+            </div>
+          )}
+
+          {errorMessage && (
+            <div className="alert alert-danger mt-3">{errorMessage}</div>
+          )}
+        </div>
+
+        <div className="text-center mt-4">
+          <Link to="/" className="btn btn-primary back-button">
+            <FaArrowLeft className="me-2" /> Go Back
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default SelectUsersPage;
